@@ -1,0 +1,114 @@
+---
+title: "Exercise 12"
+author: "Logan Arnold"
+date: "11/17/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+### Describe data
+
+We will be working with the data set "chickwts.txt", which has columns of chick weight and feed type. Let's start by reading in the data:
+
+```{r Read-in data}
+data1 <- read.table(file = "chickwts.txt", header = TRUE, sep = ",")
+attach(data1)
+print(data1)
+```
+
+### Including Plots
+
+Let's plot the data
+
+```{r Plot}
+plot(feed, weight)
+```
+
+### Statistics
+
+Now let's consider a hypothesis our data. Specifically, we will look at the feed types soybean vs. sunflower. Are the chick weight statistically significantly different for these two types of food? 
+
+We have a null hypothesis:
+
+*No, there is no difference in weight.*
+
+And an alternative hypothesis:
+
+*Yes, there is a difference in weight.*
+
+In order to test this hypothesis, we must subset the data so that it only contains the feed type of interest. Then, we must create a categorical variable to represent feed type. We will set *soybean* as 0 and *sunflower* as 1. 
+
+```{r Separate Data}
+
+n <- dim(data1)[1]
+j <- 1
+k <- 1
+soybeanWeight <- NULL
+sunflowerWeight <- NULL
+
+for (i in 1:n) {
+  if (data1[i,2] == "soybean") {
+    soybeanWeight[j] = data1[i,1]
+    j = j+1
+}
+  if (data1[i,2] == "sunflower") {
+    sunflowerWeight[k] = data1[i,1]
+    k = k+1
+  }
+}
+
+Weight <- c(soybeanWeight, sunflowerWeight)
+feedSoy <- rep(0, length(soybeanWeight))
+feedSunflower <- rep(1, length(sunflowerWeight))
+Feed <- c(feedSoy, feedSunflower) 
+
+data2 <- data.frame(Weight, Feed)
+```
+
+### Testing the hypotheses
+
+We will be using a liklihood ratio test to evaluate our hypotheses. To do this, we will use a negative log likelihood function, then compare the results using a chi-squared test.
+
+First, let's create our likelihood functions, first for the null hypothesis then for the alternative hypothesis. After the functions have been created, let's fit our model. 
+
+```{r Liklihood}
+nllike=function(p,x,y){
+  B0=p[1]
+  B1=p[2]
+  sigma=exp(p[3])
+  
+  expected=B0+B1*x
+  
+  nll=-sum(dnorm(x=y, mean =expected, sd=sigma, log=TRUE))
+  return(nll)
+}
+
+nllikeNull=function(p,x,y){
+  B0=p[1]
+  sigma=exp(p[2])
+  
+  expected=B0
+  
+  nll=-sum(dnorm(x=y, mean =expected, sd=sigma, log=TRUE))
+  return(nll)
+}
+
+fitNull=optim(par=c(250,10), fn=nllikeNull,
+                   y=data2[,1])
+fitLinear=optim(par=c(250,10,10), fn=nllike,
+                     x=data2[,2], y=data2[,1])
+```
+
+### Evaluating the Models
+
+The final step is to evaluate our models using the chi-squared test.
+
+```{r chi-squared}
+pval = pchisq(q=(fitLinear$value-fitNull$value), df=1,
+             lower.tail = FALSE)
+```
