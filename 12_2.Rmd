@@ -1,0 +1,70 @@
+---
+title: "Exercise 12_2"
+author: "Henri Chung"
+date: "November 19, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This document described 3 regular expressions that can be used to match 3 different patterns of text shown below. We will then use these regular expressions in an example.
+
+The three patterns of text we will be using are as follows;
+
++ "times before noon, but before midnight when reported in 24-hour or military format (ex. 15:30)"
++ "Genus species names expressed in the format G. Species (ex. H. sapien)"
++ "Social security numbers (ex. 389-05-4471)"
+
+First we will create a vector with these text patterns as elements, along with some dummy elements which look similiar but we do not want to select for in our regular expressions
+```{r}
+Text <- c("15:30", "s. Jones", "A. lmao", "H. sapien", "10:30", "389-05-4471", "A. raiho", "531-80-0869", "soup", "16:40", "12Q-34-5678")
+
+```
+In this vector we are looking for the following texts from each patterns;
+
++   __"15:30, 16:30"__"  
++   __"A. lmao, H. Sapien, A. Raiho"__  
++   __"389-05-4471, 531-80-0869"__  
+  
+We will devise our regular expressions as follows..
+
+For the first case, we want two numbers, a colon, and then another two numbers. However, the first set of numbers must be between 12 and 23 (representing the afternoon in military time) and the second set of numbers must be between 00 and 59. Therefore our regular expression is as follows;
+
++ __"1[2-9]"__  the number 1 followed by any numbers 2 through 9 
++ __"|"__ or 
++ __"2[0-3]"__ the number 2 followed by any numbers 0-3 
++ __":"__ colon 
++ __"[0-5]"__ any number 0 to 5 
++ __"[0-9]"__ any number from 0 to 9 
+
+######Final Expression:   __"(1[2-9]|2[0-3]):[0-5][0-9]"__  
+
+In the second case, we want a single Capitalized letter followed by a period, a space, and then word of any length in all lowercase;
+
++ __"[A-Z]"__ Any capital letter 
++ __"\\."__ A period, the backslash means that we are specifically looking for a single period, and not the regular expresssion use of period which denotes any character at all 
++ __" "__ just a blank space 
++ __"[a-z]+"__ Any lowecase letter repeated any number of times 
+
+######Final Expression:   __"[A-Z]\. [a-z]+"__  
+
+In our third case, we are looking for a series of 3 numbers, a hyphen, 2 numbers, a hyphen, and then 4 numbers. This will be our simplest case because we will just use the same general regular expression multiple times.
+
++ __"\\d{3}"__ any digit, repeated 3 times. It is important to note that this is NOT a single digit repeated 3 times (333), but rather a series of any 3 digits (456) 
++ __"-"__ a hyphen 
++ __"\\d{2}"__ any digit repeated 2 times 
++ __"-"__ another hyphen 
++ __"\\d{4}"__ any digit repeated 4 times 
+
+######Final Expression: __"\d{3}-\d{2}-\d{4}"__"  
+
+To test whether the regular expressions we created work to find the correct elements in the Text vector we are looking for, we will run the following script.
++ Note that in R, the backslash must be used twice to have the same effect as it would in normal regular expressions. There is a long, intricate story to why this is the case in R. 
+
+```{r}
+grep("(1[2-9]|2[0-3]):[0-5][0-9]", Text, value = TRUE)
+grep("[A-Z]\\. [a-z]+", Text, value = TRUE)
+grep("\\d{3}-\\d{2}-\\d{4}", Text, value = TRUE)
+```
