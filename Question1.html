@@ -182,22 +182,22 @@ subChicks &lt;- rbind(soybean,sunflower)</code></pre>
 <pre class="r"><code>#estimate parameters by minimizing the NLL. Can estimate intital parameters by using the mean of the subChick weights
 mean(subChicks$weight)</code></pre>
 <pre><code>## [1] 284.5</code></pre>
-<pre class="r"><code>Guess = c(250,1,1)
+<pre class="r"><code>Guess = c(1,1,1)
 
 #test the null hypothesis with a likelihood ratio test
-fit1=optim(Guess, nllike1, x=subChicks$weight, y=subChicks$feed)
-fit2=optim(Guess, nllike2, x=subChicks$weight, y=subChicks$feed)
+fit1=optim(Guess, nllike1, x=soybean$weight, y=soybean$feed)
+fit2=optim(Guess, nllike2, x=sunflower$weight, y=sunflower$feed)
 fit1$value</code></pre>
-<pre><code>## [1] 139.4869</code></pre>
+<pre><code>## [1] 19.7065</code></pre>
 <pre class="r"><code>fit2$value</code></pre>
-<pre><code>## [1] 139.4869</code></pre>
+<pre><code>## [1] -10.31952</code></pre>
 <pre class="r"><code>D = 2*(fit1$value-fit2$value)
 pchisq(D, df=1, lower.tail=F)</code></pre>
-<pre><code>## [1] 1</code></pre>
+<pre><code>## [1] 9.238241e-15</code></pre>
 <ol start="5" style="list-style-type: decimal">
 <li>Interpret the results of the likelihood ratio test.</li>
 </ol>
-<p>The p-value given by the model is 1 (not statistically significant), so we fail to reject the null hypothesis. Therefore, feeding the chicks the <strong>soybean or the sunflower seeds</strong> doesn’t change the <strong>chick’s weight.</strong></p>
+<p>The p-value given by the model is 9.23e-15 (statistically significant), so the null hypothesis can be rejected. Therefore, feeding the chicks the <strong>soybean or the sunflower seeds</strong> does signficantly change the <strong>chick’s weight.</strong></p>
 </div>
 
 
