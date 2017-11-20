@@ -85,11 +85,11 @@ Now that we have the custom functions for the *null and alternative hypothese*s,
 ```{r}
 #estimate parameters by minimizing the NLL. Can estimate intital parameters by using the mean of the subChick weights
 mean(subChicks$weight)
-Guess = c(250,1,1)
+Guess = c(1,1,1)
 
 #test the null hypothesis with a likelihood ratio test
-fit1=optim(Guess, nllike1, x=subChicks$weight, y=subChicks$feed)
-fit2=optim(Guess, nllike2, x=subChicks$weight, y=subChicks$feed)
+fit1=optim(Guess, nllike1, x=soybean$weight, y=soybean$feed)
+fit2=optim(Guess, nllike2, x=sunflower$weight, y=sunflower$feed)
 fit1$value
 fit2$value
 D = 2*(fit1$value-fit2$value)
@@ -99,4 +99,4 @@ pchisq(D, df=1, lower.tail=F)
 
 5. Interpret the results of the likelihood ratio test.
 
-The p-value given by the model is 1 (not statistically significant), so we fail to reject the null hypothesis. Therefore, feeding the chicks the **soybean or the sunflower seeds** doesn't change the **chick's weight.**
+The p-value given by the model is 9.23e-15 (statistically significant), so the null hypothesis can be rejected. Therefore, feeding the chicks the **soybean or the sunflower seeds** does signficantly change the **chick's weight.**
