@@ -1,0 +1,39 @@
+Times:
+1:00
+01:00
+05:50
+06:07
+6:07
+12:00
+12:01
+13:01
+1:01
+17:56
+18:50
+6:50
+22:50
+22:70
+23:40
+25:90
+
+Species:
+E. albifrons
+E. cinereiceps
+E. collaris E. coronatus
+E. flavifrons
+E. fulvus
+E. macaco
+Not A Species
+Not. species
+N. Species
+N. specieS
+n. species
+
+Social Security Numbers
+389-05-4771
+123-45-6789
+123456789
+1234-12-1234
+111-1-1111
+111-22-333
+987-65-4321
