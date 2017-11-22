@@ -1,0 +1,102 @@
+---
+title: "Tutorial 12 Question 1"
+author: "Kate Vendrely"
+date: "11/17/2017"
+output: html_document
+---
+
+### Question 1
+
+
+1. Generally describe the dataset in "chickwts.txt"
+
+First, let's load the data and save it as "chick":
+
+```{r}
+chick=read.table("chickwts.txt",sep=",",header = TRUE)
+```
+
+We can see that we have a table with 2 columns and 72 rows (two of which are headers). The **weight** of the chicks are in the first column and the **feed type** are in the second column.
+
+
+
+2. Generate a plot that summarizes all of the data in "chickwts.txt"
+
+Now that we know what the data looks like in a table, let's look at it graphically using a boxplot:
+
+```{r}
+library(ggplot2)
+a = ggplot(data = chick, aes(x = feed, y = weight))
+a + geom_boxplot() + theme_classic() + xlab("feed") + ylab("weight (g)")
+```
+
+It looks like there are a range of **chick weights** and mean **chick weights** for each of the **different types of feeds**. They all seem to have wide ranges, and the sunflower **feed** seems to have some outliers. But if we looked just at the **soybean and the sunflower feed types** are they significantly different from each other? Does feeding chicks **soybeans or sunflower seeds** significantly impact their **weight**?
+
+
+
+3. State a *null and alternative hypothesis for the difference in chick weights when fed soybean vs. sunflower feed*
+
+Now that we know what the data looks like, let's see if there is a difference in **chick weights** when fed **soybeans** versus those fed with **sunflower seeds.**
+
+To do this, let's write a two custom likelihood functions, one for the *null hypothesis (nllike1: there is no difference in chick weights between the two feed types) and one for the alternative hypothesis (nllike2: there is a difference in chick weights between the two feed types):*
+
+```{r}
+nllike1=function(p,x,y){
+  B0=p[1]
+  B1=p[2]
+  sigma=exp(p[3])
+  
+  expected=B0+B1*x
+  
+  nll=-sum(dnorm(x=y,mean=expected,sd=sigma,log=TRUE))
+  return(nll)
+}
+
+nllike2 <- function(p,x,y){
+  B0=p[1]
+  B1=p[2]
+  sigma = exp(p[3])
+  expected = B0+B1*x
+  
+  nll = -sum(dnorm(y, mean=expected, sd=sigma, log=TRUE))
+  return(nll)
+}
+```
+
+
+Now before we can test our *hypotheses to determine whether there is a difference in chick **weights** between those that were **fed soybean or sunflower** seeds,* we have to take all of the data and subset it to have only the chicks **fed soybean or sunflowers** in our data set and then change soybean to "0" and sunflowers to "1" so our test can recognize the differences between the *feed types*.
+
+To do this:
+
+```{r}
+soybean <- chick[which(chick$feed=="soybean"),]
+soybean[,2] <- 0
+sunflower <- chick[which(chick$feed=="sunflower"),]
+sunflower[,2] <- 1
+subChicks <- rbind(soybean,sunflower)
+```
+
+
+
+4. Test the *null hypothesis* above using a likelihood ratio test using the subset **soybean and sunflower seed fed** chicks data.
+
+Now that we have the custom functions for the *null and alternative hypothese*s, let's test the null hypothesis using a likelihood ratio test:
+
+```{r}
+#estimate parameters by minimizing the NLL. Can estimate intital parameters by using the mean of the subChick weights
+mean(subChicks$weight)
+Guess = c(1,1,1)
+
+#test the null hypothesis with a likelihood ratio test
+fit1=optim(Guess, nllike1, x=soybean$weight, y=soybean$feed)
+fit2=optim(Guess, nllike2, x=sunflower$weight, y=sunflower$feed)
+fit1$value
+fit2$value
+D = 2*(fit1$value-fit2$value)
+pchisq(D, df=1, lower.tail=F)
+```
+
+
+5. Interpret the results of the likelihood ratio test.
+
+The p-value given by the model is 9.23e-15 (statistically significant), so the null hypothesis can be rejected. Therefore, feeding the chicks the **soybean or the sunflower seeds** does signficantly change the **chick's weight.**
