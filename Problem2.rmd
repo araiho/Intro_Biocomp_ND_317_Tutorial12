@@ -28,9 +28,12 @@ COmparing the results to the examples file reveals that only the desired times w
 ##b)
 Regex2 <- "[A-Z][.]\s[a-z]+($|\s)"
 ```{r, echo=TRUE,eval=TRUE}
-#This setup reused for later parts as well
-library(regexr)
-
-bOutput=grep("[A-Z][.]\s[a-z]+($|\s)", exampleData, value = TRUE)
+bOutput=grep("[A-Z][.]\040[a-z]+$", exampleData, value = TRUE)
 bOutput
+```
+***
+##c)
+```{r, echo=TRUE,eval=TRUE}
+cOutput=grep("^[0-9]{3}-[0-9]{2}-[0-9]{4}", exampleData, value = TRUE)
+cOutput
 ```
