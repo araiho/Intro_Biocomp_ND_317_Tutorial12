@@ -1,0 +1,36 @@
+---
+title: "Problem2"
+author: "Shane Davitt"
+date: "November 22, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Introduction
+A file (ExamplesforRegex.txt) contains all of the examples for problem 2, including data that should and shoul not be selected by the varous regex expressions. It is printed below:
+```{r, echo=TRUE, eval=TRUE}
+exampleData=scan(file="ExamplesforRegex.txt", what = "character")
+exampleData
+```
+##a)
+Regex1 <- "[12][0-9]:[0-5][0-9]"
+```{r, echo=TRUE,eval=TRUE}
+#This setup reused for later parts as well
+library(regexr)
+
+aOutput=grep("[12][0-9]:[0-5][0-9]", exampleData, value = TRUE)
+aOutput
+```
+COmparing the results to the examples file reveals that only the desired times were selected.
+***
+##b)
+Regex2 <- "[A-Z][.]\s[a-z]+($|\s)"
+```{r, echo=TRUE,eval=TRUE}
+#This setup reused for later parts as well
+library(regexr)
+
+bOutput=grep("[A-Z][.]\s[a-z]+($|\s)", exampleData, value = TRUE)
+bOutput
+```
