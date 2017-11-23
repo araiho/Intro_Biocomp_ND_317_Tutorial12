@@ -1,6 +1,6 @@
 ---
 title: "Problem2"
-author: "Shane Davitt"
+author: "Shane Davitt, Kevin Fick, and Logan Arnold"
 date: "November 22, 2017"
 output: html_document
 ---
@@ -33,6 +33,7 @@ Regex2 <- "[A-Z][.]\s[a-z]+($|\s)"
 bOutput=grep("[A-Z][.]\\s[a-z]+($|\\s)", exampleData, value = TRUE)
 bOutput
 ```
+Comparing the results to the examples file reveals that only the desired names were selected.
 
 ***
 
@@ -41,3 +42,4 @@ bOutput
 cOutput=grep("^[0-9]{3}-[0-9]{2}-[0-9]{4}", exampleData, value = TRUE)
 cOutput
 ```
+Comparing the results to the examples file reveals that only the desired social security numbers were selected.
