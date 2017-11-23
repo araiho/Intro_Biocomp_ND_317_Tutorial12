@@ -11,14 +11,20 @@ knitr::opts_chunk$set(echo = TRUE)
 #Introduction
 A file (ExamplesforRegex.txt) contains all of the examples for problem 2, including data that should and shoul not be selected by the varous regex expressions. It is printed below:
 ```{r, echo=TRUE, eval=TRUE}
-exampleData=scan(file="ExamplesforRegex.txt", what = "character")
-exampleData
+
+conn <- file("ExamplesforRegex.txt")
+exampleData <- readLines(conn)
+for (i in 1:length(exampleData)){
+   print(exampleData[i])
+}
+
 ```
 ##a)
 Regex1 <- "[12][0-9]:[0-5][0-9]"
 ```{r, echo=TRUE,eval=TRUE}
 #This setup reused for later parts as well
-library(regexr)
+library(stringr)
+#library(regexr) could also work, but may need to be downloaded
 
 aOutput=grep("[12][0-9]:[0-5][0-9]", exampleData, value = TRUE)
 aOutput
