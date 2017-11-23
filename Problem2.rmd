@@ -23,12 +23,12 @@ library(regexr)
 aOutput=grep("[12][0-9]:[0-5][0-9]", exampleData, value = TRUE)
 aOutput
 ```
-COmparing the results to the examples file reveals that only the desired times were selected.
+Comparing the results to the examples file reveals that only the desired times were selected.
 ***
 ##b)
 Regex2 <- "[A-Z][.]\s[a-z]+($|\s)"
 ```{r, echo=TRUE,eval=TRUE}
-bOutput=grep("[A-Z][.]\040[a-z]+$", exampleData, value = TRUE)
+bOutput=grep("[A-Z][.]\\s[a-z]+($|\\s)", exampleData, value = TRUE)
 bOutput
 ```
 ***
