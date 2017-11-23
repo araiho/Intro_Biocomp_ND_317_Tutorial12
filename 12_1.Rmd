@@ -1,0 +1,85 @@
+---
+title: "Exercise 12_1"
+author: "Keith_O'Connor"
+date: "11/22/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+This document describes the analysis of a dataset that shows different types of feed and the corresponding weights of the chickens eating that feed.
+
+The dataset is divided into two columns. One contains the different types of feed chickens are give. The second contains the weights of the chicken eating the feed specified in column one.
+
+To gain a better understanding of the data, I generated a box and whisker plot of it below:
+
+```{r}
+library(ggplot2)
+
+chickwts <- read.csv("chickwts.txt")
+
+plot1 <- ggplot(chickwts, aes(x = feed, y = weight)) +
+  geom_boxplot() + 
+  theme_bw() + 
+  ggtitle("Chicken Feed vs. Weight")
+
+plot1
+
+```
+
+As shown by this plot, chickens eating different sources of feed also tend to have different weights 9ex. Casein and sunflower being much higher than horsebean)
+
+Now, what if we delve into the data further. Lets create and test a null hypothesis and alternate hypothesis.
+
+    Null Hypothesis: Soybeans and sunflowers don't effect chicken weight.
+    
+    Alternate hypothesis: That either soybeans or sunflowers will affect chicken weight more than the other.
+    
+Since we are only interested in soybeans and sunflowers, lets isolate those types of feed in the data set using the subset function.
+
+```{r}
+SoybeanandSunflower <- subset(chickwts, feed == "soybean"|feed == "sunflower")
+```
+
+Now we can set up the negative log likelihood functions. 
+
+```{r}
+nnlike0 <- function(p,x,y){
+  B0 = p[1]
+  sigma = exp(p[2])
+  expected = B0
+  nll= -sum(dnorm(x=y, mean=expected, sd = sigma, log = TRUE))
+  return(nll)
+}
+
+nnlike1 <- function(p,x,y){
+  B0 = p[1]
+  B1 = p[2]
+  sigma = exp(p[3])
+  expected = B0+B1*x
+  nll1= -sum(dnorm(x=y, mean=expected, sd = sigma, log = TRUE))
+  return(nll1)
+}
+```
+
+The next step is to figure out what parameters to run the models with. The numbers that I use here are the mean of the data set, as well as the standard deviation of those number. Graphing these values may help to figure out better parameter values.
+
+```{r}
+params0 <- c(286.16,66.61)
+params1 <- c(286.16,66.61,1)
+```
+
+The following calculates the likelihood ratio of the null model compared to the alternate hypothesis:
+```{r}
+fit0 = optim(par = params0, fn=nnlike0, y=SoybeanandSunflower[(SoybeanandSunflower$feed%in%c("soybean","sunflower")),]$weight, x = 0)
+fit1 = optim(par = params1, fn=nnlike1, y=SoybeanandSunflower[(SoybeanandSunflower$feed%in%c("soybean","sunflower")),]$weight, x = 1)
+
+Likelihood_ratio <- 2*abs((fit0$value-fit1$value))
+Likelihood_ratio
+                      
+pvalue <- pchisq(q = (Likelihood_ratio), df = 1, lower.tail = FALSE)
+
+pvalue
+```
+The p value of 0.9970055 means that there is a 99.70055% likelihood that the null hypothesis is correct, which means that one food source isn't effecting the chickens compared to the other.

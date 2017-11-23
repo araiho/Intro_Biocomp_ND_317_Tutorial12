@@ -1,7 +1,6 @@
 library(ggplot2)
 
 chickwts <- read_csv("chickwts.txt")
-View(chickwts)
 
 plot1 <- ggplot(chickwts, aes(x = feed, y = weight)) +
   geom_boxplot() + 
@@ -33,13 +32,18 @@ nnlike1 <- function(p,x,y){
   return(nll1)
 }
 
-params0 <- c(400,100)
-params1 <- c(400,100,100)
+params0 <- c(286.16,66.61)
+params1 <- c(286.16,-200,66.61)
 
 fit0 = optim(par = params0, fn=nnlike0, y=SoybeanandSunflower[(SoybeanandSunflower$feed%in%c("soybean","sunflower")),]$weight, x = 0)
 fit1 = optim(par = params1, fn=nnlike1, y=SoybeanandSunflower[(SoybeanandSunflower$feed%in%c("soybean","sunflower")),]$weight, x = 1)
 
-NullHypothesis <- pchisq(q = 2*abs((fit0$value-fit1$value)), df = 1, lower.tail = FALSE)
+Likelihood_ratio <- 2*abs((fit0$value-fit1$value))
+Likelihood_ratio
 
-NullHypothesis
+                      
+pvalue <- pchisq(q = (Likelihood_ratio), df = 1, lower.tail = FALSE)
 
+pvalue
+
+#99.3% likelihood that the null hypothesis is correct
