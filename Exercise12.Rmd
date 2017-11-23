@@ -109,10 +109,10 @@ fitLinear=optim(par=c(250,10,10), fn=nllike,
 The final step is to evaluate our models using the chi-squared test. The test statistic is 2 times the difference in the NLL obtained from our optimization step. 
 
 ```{r chi-squared}
-pval = pchisq(q=(2*(fitLinear$value-fitNull$value)), df=1,
+pval = pchisq(q=(2*(fitNull$value-fitLinear$value)), df=1,
              lower.tail = FALSE)
 ```
 
 ### Interpreting the Results
 
-The p-value for the chi-squared test is 1. Therfore, we fail to reject the null hypothesis; *there is no statistically significant difference between weight among the food types soy and sunflower.*
+The p-value for the chi-squared test is 0.002. Therfore, with a cutoff of 0.05, we reject the null hypothesis, and accept the alternative hypothesis: *there is a statistically significant difference between weight among the food types soy and sunflower.*
