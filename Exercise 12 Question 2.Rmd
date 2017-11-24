@@ -1,0 +1,48 @@
+---
+title: "Exercise 12"
+author: "Michelle"
+date: "November 17, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regular Expressions
+
+Regular expressions (regex) are used to match desired strings in text or files from those that are unwanted by using code to demarcate significant portions of the string.
+
+### Times after noon, but before midnight when reported in 24-hour or "military" format (e.g. 15:30)
+
+Time range = 12:00 - 23:59
+
+```{r}
+"[12-23]:[00-59]" 
+```
+
+[ ] denotes matching to a single character
+
+### Genus species names expressed in the format G. species (e.g. H. sapien)
+
+```{r}
+"[A-Z](.)( )[a-z]+"
+```
+
+[A-Z] is a single capitalized letter
+
+(.) requires the "." character"
+
+( ) requires a space after "."
+
+[a-z]+ allows for one or more lowercase letter
+
+### Social Security Numbers (e.g. 389-05-4771)
+
+```{r}
+"[0-9]{3}-[0-9]{2}-[0-9]{4}"
+```
+
+[0-9] searches for a single number from 0-9
+
+{#} matches a digit where # is the number of characters in the square brackets it will match.
