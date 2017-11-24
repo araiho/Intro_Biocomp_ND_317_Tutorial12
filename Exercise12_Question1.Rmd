@@ -1,0 +1,107 @@
+---
+title: "Exercise 12, Question 1"
+author: "Lindsay Serene and Michelle Wang"
+date: "11/21/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###**Aim 1: Describe the data of chickwts.txt**
+
+Set working directory:
+
+```{r, echo=TRUE}
+setwd("~/Desktop/")
+```
+
+Load the necessary libraries:
+
+```{r,echo=TRUE}
+library(ggplot2)
+library(deSolve)
+```
+
+Open chickwts.txt and assign it a variable name.
+
+```{r,echo=TRUE}
+D = read.table(file = "chickwts.txt", header = TRUE, sep = "," , stringsAsFactors = FALSE)
+```
+
+The data is presented in two columns: **feed** and **weight**. **Feed** is additionally subdivided into 6 categories based on **feed** type.
+
+###**Aim 2: Plot the data.**
+
+
+As a dot plot:
+
+```{r,echo=TRUE}
+ggplot(data = D, aes(x = feed, y = weight))+theme_classic()+coord_cartesian()+geom_jitter(aes(color=as.factor(feed)))+theme(legend.position="none")+xlab("Feed")+ylab("Weight")
+```
+
+As a bar graph:
+
+```{r, echo=TRUE}
+ggplot(data = D)+geom_bar(aes(x =as.factor(feed), y = weight), stat = "summary",fun.y = "mean", fill = "black", color = "black") +
+  theme_classic() +xlab("Feed") +ylab("Weight")
+```
+
+###**Aim 3: State a hypothesis (H_A) and null hypothesis (H_0) based on the data.**
+
+* *H_A=there is a differnece in **weight** between chicks **fed** soybean as compared to those **fed** sunflower seeds.*
+
+* *H_0=there is NO difference in **weight** between chicks **fed** soybean as compared to those **fed** sunflower seeds.*
+
+###**Aim 4: Test the null hypothesis using a likelihood ratio test.**
+
+Subset the **feed** type "soybean" into a variable called Soybean:
+
+```{r, echo=TRUE}
+Soybean <- subset(D, feed == "soybean", c(1,2))
+```
+
+Subset the **feed** type "sunflower" into a variable called Sunflower.
+
+```{r, echo=TRUE}
+Sunflower <- subset(D, feed == "sunflower", c(1,2))
+```
+
+Combine subsets Soybean and Sunflower into one dataframe called df.feed:
+
+```{r, echo=TRUE}
+df.feed <- rbind.data.frame(Soybean[c("weight", "feed")], Sunflower[c("weight", "feed")])
+```
+
+Define a log likelihood function:
+
+```{r, echo=TRUE}
+LL = function(data.in, mu.in, sd.in){
+  sum(dnorm(data.in, mu.in, sd.in, log = T))
+}
+```
+
+Obtain MLEs for the two hypothesized models:
+
+```{r, echo=TRUE}
+H_0 = optim(
+  par=c(340,10),
+  function(par){
+    -LL(df.feed$weight,par[1],par[2])})
+H_A = optim(
+  par=c(340,350,10),
+  function(par){
+    -LL(subset(df.feed,feed=='soybean')$weight,par[1],par[3]) +
+      -LL(subset(df.feed,feed=='sunflower')$weight,par[2],par[3])})
+```
+
+Perform a likelihood ratio test to determine whether we can reject the null hypothesis (H_0):
+
+```{r, echo=TRUE}
+dchisq(-2 * (-H_0$value - -H_A$value), 1)
+```
+
+###**Aim 5: Interpret the results of the likelihood test.**
+The p value is >0.001, indicating that the null hypothesis (H_0) can be rejected. Instead, we can accept the alternative hypothesis (H_A), which states that the differences in **weight** can be attributed to **feed** type.
+
