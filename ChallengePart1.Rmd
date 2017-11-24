@@ -1,0 +1,73 @@
+---
+title: "Chick Weight Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(knitr)
+```
+
+```{r readin,echo=FALSE}
+chicks <- read.csv('chickwts.txt', header = TRUE, sep = ",")
+```
+
+We have data which details the **weight** of different chicken bracketted by the type of **feed* they ate.  The whole of the data is summarized below:
+
+```{r summary, echo=FALSE}
+summary(chicks)
+```
+
+We summarize the data for **feed type** cassien below:
+
+```{r cassein summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="cassein"),])
+```
+
+We summarize the data for **feed type** horsebean below:
+
+```{r horsebean summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="horsebean"),])
+```
+
+We summarize the data for **feed type** linseed below:
+
+```{r linseed summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="linseed"),])
+```
+
+We summarize the data for **feed type** meatmeal below:
+
+```{r meatmeal summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="meatmeal"),])
+```
+
+We summarize the data for **feed type** soybean below:
+
+```{r soybean summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="soybean"),])
+```
+
+We summarize the data for **feed type** sunflower below:
+
+```{r sunflower summary, echo=FALSE}
+summary(chicks[which(chicks$feed=="sunflower"),])
+```
+
+We now summarize the entirey of the data in a graph below:
+
+```{r chicks, echo=FALSE}
+d = ggplot(data = chicks)
+d + geom_bar(aes(x=as.factor(feed),y=weight),stat="summary",
+             fun.y="mean",fill="blue",color="black") + theme_classic() +
+            xlab("Type of Feed")+ylab("Average Weight ")
+```
+
+To investigate whether feeding chickens different **feed** may have had an affect on their **weight**, we test whether the **weights** of chickens fed sunflower and soybeans are statistically different.  To do so, we first construct null and alternate hypotheses.
+
+*Null Hypothesis: The* **weight** *of chickens fed sunflower and soybeans are not significantly different.*
+
+*Alternate Hypothesis: The* **weight** *of chickens fed sunflower and soybeans are significantly different.*
+
+We performed likelihood ratio test to compare the **weights** of chickens fed sunflower and soybeans and arrived at a p-value of approximately 0.000233458.  This is small enough to reject the null hypothesis, so we project that that the **weights** of chickens fed soybeans and sunflowers are significantly different.
