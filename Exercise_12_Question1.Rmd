@@ -1,0 +1,75 @@
+---
+title: "Negative Log Likelihood"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#### Exploring the dataset 
+* Import the table and print it in your console
+```{r}
+chickwts <- read.csv("chickwts.txt", header=TRUE, sep=",")
+chickwts
+```
+* You'll see the data has a column that is the type of feed that the chicks receive, and the other column is the weight of the chicks receiving that feed. 
+
+
+
+#### Summarize the data by plotting to look at trends. Here we plot the mean chick weight for each feed type. 
+```{r}
+library(ggplot2)
+
+plot <- ggplot()+
+          theme_classic()+
+          geom_bar(data=chickwts, aes(x=feed,y=weight), stat='summary', fun.y = 'mean')
+plot
+```
+
+* You can see that the average chick weight for the sunflower feed is higher than the average chick weight for the soybean feed. 
+* To work with these data we subset into two matrices, one containing the soybean data only and the other containing the sunflower data only:
+```{r}
+soybean <- chickwts[chickwts$feed == 'soybean',]
+sunflower <- chickwts[chickwts$feed == 'sunflower',]
+```
+
+
+
+#### Now we create hypotheses based on the visualization of the data and test. 
+* Null hypothesis: the mean weight of the sunflower fed chicks is the same as the mean weight of the soybean fed chicks.
+* Alternative hypothesis: the mean weight of the sunflower fed chicks is larger than the mean weight of the soybean fed chicks.
+* To test we use the negative log likelihood and then a likelihood ratio test to test the null hypothesis.
+1. First we create a null hypothesis function:
+```{r}
+nullike <- function(p,x,y){
+  B0=p[1]
+  sig=exp(p[2])
+  expected=B0
+  nullike=-sum(dnorm(x=y), mean=expected, sd=sig,log=TRUE)
+  return(nullike)
+}
+```
+2. Second we use the optim function the maximize the paramters of the function:
+```{r}
+#soybean null
+initialGuess=c(250,1)
+soyfit=optim(par=initialGuess,fn=nullike,y=soybean$weight)
+print(soyfit)
+
+#sunflower null
+initialGuess=c(300,1)
+sunfit=optim(par=initialGuess,fn=nullike,y=sunflower$weight)
+print(sunfit)
+```
+
+* The initial guesses are based off of the bar graph we created earlier. I used approximate means from the graph.
+
+3. Finally we have to do the likelihood ratio test by finding two times the difference in likelihoods and determining if it's large relative to a chi distribution:
+```{r}
+difflike <- 2*(sunfit$value - soyfit$value)
+pchisq(q=difflike, df=1, lower.tail = FALSE)
+```
+
+* In the chi distribution (pchisq), we use one degree of freedom (df=1)
+
+#### We see that the likelihood ratio test reveals an outcome of 1, which means the mean weight of soybean fed chicks is not significantly different from the mean weight of sunflower fed chicks.
